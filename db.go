@@ -24,7 +24,7 @@ func CacheMapperOption(im IMapper) Option {
 	}
 }
 
-func TraceOption(enable bool) Option {
+func EnableTraceOption(enable bool) Option {
 	return func(db *DB) {
 		db.enableTrace = enable
 	}
