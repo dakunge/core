@@ -77,8 +77,8 @@ type Dialect interface {
 	Filters() []Filter
 }
 
-func OpenDialect(dialect Dialect) (*DB, error) {
-	return Open(dialect.DriverName(), dialect.DataSourceName())
+func OpenDialect(dialect Dialect, opts ...Option) (*DB, error) {
+	return Open(dialect.DriverName(), dialect.DataSourceName(), opts...)
 }
 
 type Base struct {
