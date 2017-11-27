@@ -26,7 +26,7 @@ type Uri struct {
 
 // a dialect is a driver's wrapper
 type Dialect interface {
-	SetLogger(logger ILogger)
+	SetLogger(logger func(context.Context) ILogger)
 	Init(*DB, *Uri, string, string) error
 	URI() *Uri
 	DB() *DB
@@ -86,7 +86,7 @@ type Base struct {
 	dialect        Dialect
 	driverName     string
 	dataSourceName string
-	logger         ILogger
+	logger         func(context.Context) ILogger
 	*Uri
 }
 
@@ -94,7 +94,7 @@ func (b *Base) DB() *DB {
 	return b.db
 }
 
-func (b *Base) SetLogger(logger ILogger) {
+func (b *Base) SetLogger(logger func(context.Context) ILogger) {
 	b.logger = logger
 }
 
@@ -153,7 +153,7 @@ func (db *Base) DropTableSql(tableName string) string {
 }
 
 func (db *Base) HasRecords(ctx context.Context, query string, args ...interface{}) (bool, error) {
-	db.LogSQL(query, args)
+	db.LogSQL(ctx, query, args)
 	rows, err := db.DB().Query(ctx, query, args...)
 	if err != nil {
 		return false, err
@@ -280,13 +280,18 @@ func (b *Base) ForUpdateSql(query string) string {
 	return query + " FOR UPDATE"
 }
 
-func (b *Base) LogSQL(sql string, args []interface{}) {
-	if b.logger != nil && b.logger.IsShowSQL() {
-		if len(args) > 0 {
-			b.logger.Infof("[SQL] %v %v", sql, args)
-		} else {
-			b.logger.Infof("[SQL] %v", sql)
-		}
+func (b *Base) LogSQL(ctx context.Context, sql string, args []interface{}) {
+	if b.logger == nil {
+		return
+	}
+	l := b.logger(ctx)
+	if l == nil || !l.IsShowSQL() {
+		return
+	}
+	if len(args) > 0 {
+		l.Infof("[SQL] %v %v", sql, args)
+	} else {
+		l.Infof("[SQL] %v", sql)
 	}
 }
 
