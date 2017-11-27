@@ -8,6 +8,7 @@ import (
 	"fmt"
 	"reflect"
 	"regexp"
+	"strings"
 
 	opentracing "github.com/opentracing/opentracing-go"
 )
@@ -445,6 +446,12 @@ func newClientSpanFromContext(ctx context.Context, query string) opentracing.Spa
 	if parent := opentracing.SpanFromContext(ctx); parent != nil {
 		parentSpanContext = parent.Context()
 	}
-	// TODO: query length limit
-	return opentracing.StartSpan(query, opentracing.ChildOf(parentSpanContext))
+	// https://github.com/openzipkin/brave/blob/master/instrumentation/mysql/src/main/java/brave/mysql/TracingStatementInterceptor.java#L40
+	operationName := query
+	if index := strings.Index(operationName, " "); index > 0 {
+		operationName = operationName[:index]
+	}
+	span := opentracing.StartSpan(operationName, opentracing.ChildOf(parentSpanContext))
+	span.SetTag("sql.query", query)
+	return span
 }
