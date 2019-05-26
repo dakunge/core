@@ -54,7 +54,9 @@ func FromDB(db *sql.DB, opts ...Option) *DB {
 }
 
 func (db *DB) Query(ctx context.Context, query string, args ...interface{}) (*Rows, error) {
+	fmt.Println("lingochamp query")
 	if db.enableTrace {
+		fmt.Println("lingochamp query enable")
 		span := newClientSpanFromContext(ctx, query)
 		defer span.Finish()
 	}
@@ -67,7 +69,9 @@ func (db *DB) Query(ctx context.Context, query string, args ...interface{}) (*Ro
 }
 
 func (db *DB) Exec(ctx context.Context, query string, args ...interface{}) (sql.Result, error) {
+	fmt.Println("lingochamp exec")
 	if db.enableTrace {
+		fmt.Println("lingochamp exec enable")
 		span := newClientSpanFromContext(ctx, query)
 		defer span.Finish()
 	}
@@ -131,7 +135,9 @@ func (db *DB) Prepare(ctx context.Context, query string) (*Stmt, error) {
 		return "?"
 	})
 
+	fmt.Println("lingochamp prepare")
 	if db.enableTrace {
+		fmt.Println("lingochamp prepare enable")
 		span := newClientSpanFromContext(ctx, query)
 		defer span.Finish()
 	}
@@ -143,7 +149,9 @@ func (db *DB) Prepare(ctx context.Context, query string) (*Stmt, error) {
 }
 
 func (s *Stmt) Exec(ctx context.Context, args ...interface{}) (sql.Result, error) {
+	fmt.Println("lingochamp stmt exec")
 	if s.enableTrace {
+		fmt.Println("lingochamp stmt exec enable")
 		span := newClientSpanFromContext(ctx, "Stmt Exec")
 		defer span.Finish()
 	}
@@ -178,7 +186,9 @@ func (s *Stmt) ExecStruct(ctx context.Context, st interface{}) (sql.Result, erro
 }
 
 func (s *Stmt) Query(ctx context.Context, args ...interface{}) (*Rows, error) {
+	fmt.Println("lingochamp stmt query")
 	if s.enableTrace {
+		fmt.Println("lingochamp stmt exec")
 		span := newClientSpanFromContext(ctx, "Stmt Query")
 		defer span.Finish()
 	}
@@ -300,7 +310,9 @@ func (tx *Tx) Prepare(ctx context.Context, query string) (*Stmt, error) {
 		return "?"
 	})
 
+	fmt.Println("lingochamp tx prepare")
 	if tx.enableTrace {
+		fmt.Println("lingochamp tx prepare enable")
 		span := newClientSpanFromContext(ctx, query)
 		defer span.Finish()
 	}
@@ -318,7 +330,9 @@ func (tx *Tx) Stmt(stmt *Stmt) *Stmt {
 }
 
 func (tx *Tx) Exec(ctx context.Context, query string, args ...interface{}) (sql.Result, error) {
+	fmt.Println("lingochamp tx exec")
 	if tx.enableTrace {
+		fmt.Println("lingochamp tx exec enable")
 		span := newClientSpanFromContext(ctx, query)
 		defer span.Finish()
 	}
@@ -343,7 +357,9 @@ func (tx *Tx) ExecStruct(ctx context.Context, query string, st interface{}) (sql
 }
 
 func (tx *Tx) Query(ctx context.Context, query string, args ...interface{}) (*Rows, error) {
+	fmt.Println("lingochamp tx query")
 	if tx.enableTrace {
+		fmt.Println("lingochamp tx query enable")
 		span := newClientSpanFromContext(ctx, query)
 		defer span.Finish()
 	}
